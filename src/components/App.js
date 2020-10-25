@@ -1,18 +1,22 @@
 import React from 'react';
 import { Switch, Route, NavLink } from 'react-router-dom';
-import Loadable from 'react-loadable';
+import loadable from '@loadable/component';
 
 import Head from './Head';
 
-const LoadableHome = Loadable({
-  loader: () => import(/* webpackChunkName: 'home' */ './Home'),
-  loading: () => <div>Loading...</div>
-});
+const LoadableHome = loadable(
+  () => import(/* webpackChunkName: 'home' */ './Home'),
+  {
+    fallback: () => <div>Loading...</div>
+  }
+);
 
-const LoadableAbout = Loadable({
-  loader: () => import(/* webpackChunkName: 'about' */ './about/About'),
-  loading: () => <div>Loading...</div>
-});
+const LoadableAbout = loadable(
+  () => import(/* webpackChunkName: 'about' */ './about/About'),
+  {
+    fallback: () => <div>Loading...</div>
+  }
+);
 
 const App = () => (
   <div className="app">

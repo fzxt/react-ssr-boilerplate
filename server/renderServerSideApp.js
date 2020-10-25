@@ -1,15 +1,18 @@
+import path from 'path';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { StaticRouter } from 'react-router-dom';
 import Helmet from 'react-helmet';
-import Loadable from 'react-loadable';
-import { getBundles } from 'react-loadable/webpack';
+import { ChunkExtractor, ChunkExtractorManager } from '@loadable/server';
 
 import App from '../src/components/App';
 import { fetchDataForRender } from './fetchDataForRender';
 import { indexHtml } from './indexHtml';
-import stats from '../build/react-loadable.json';
+
 import { ServerDataProvider } from '../src/state/serverDataContext';
+
+const statsFile = path.resolve('./build/react-loadable.json');
+const chunkExtractor = new ChunkExtractor({ statsFile });
 
 const ServerApp = ({ context, data, location }) => {
   return (
@@ -22,19 +25,18 @@ const ServerApp = ({ context, data, location }) => {
 };
 
 export const renderServerSideApp = (req, res) => {
-  Loadable.preloadAll()
-    .then(() => fetchDataForRender(ServerApp, req))
-    .then(data => renderApp(ServerApp, data, req, res));
+  fetchDataForRender(ServerApp, req).then(data =>
+    renderApp(ServerApp, data, req, res)
+  );
 };
 
 function renderApp(ServerApp, data, req, res) {
   const context = {};
-  const modules = [];
 
   const markup = ReactDOMServer.renderToString(
-    <Loadable.Capture report={moduleName => modules.push(moduleName)}>
+    <ChunkExtractorManager extractor={chunkExtractor}>
       <ServerApp location={req.url} data={data} context={context} />
-    </Loadable.Capture>
+    </ChunkExtractorManager>
   );
 
   if (context.url) {
@@ -43,7 +45,7 @@ function renderApp(ServerApp, data, req, res) {
     const fullMarkup = indexHtml({
       helmet: Helmet.renderStatic(),
       serverData: data,
-      bundles: getBundles(stats, modules),
+      chunkExtractor,
       markup
     });
 

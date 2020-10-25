@@ -4,7 +4,7 @@ const webpack = require('webpack');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const eslintFormatter = require('react-dev-utils/eslintFormatter');
 const LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
-const { ReactLoadablePlugin } = require('react-loadable/webpack');
+const LoadablePlugin = require('@loadable/webpack-plugin');
 const ErrorOverlayPlugin = require('error-overlay-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
@@ -173,8 +173,9 @@ module.exports = function(envType) {
       new ManifestPlugin({
         fileName: 'asset-manifest.json'
       }),
-    new ReactLoadablePlugin({
-      filename: 'build/react-loadable.json'
+    new LoadablePlugin({
+      filename: 'react-loadable.json',
+      writeToDisk: true
     })
   ].filter(Boolean);
 
