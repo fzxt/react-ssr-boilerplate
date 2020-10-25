@@ -4,19 +4,16 @@ import loadable from '@loadable/component';
 
 import Head from './Head';
 
-const LoadableHome = loadable(
-  () => import(/* webpackChunkName: 'home' */ './Home'),
-  {
-    fallback: () => <div>Loading...</div>
-  }
-);
+function LoadingComponent() {
+  return <div>Loading...</div>;
+}
+const LoadableHome = loadable(() => import('./Home'), {
+  fallback: LoadingComponent
+});
 
-const LoadableAbout = loadable(
-  () => import(/* webpackChunkName: 'about' */ './about/About'),
-  {
-    fallback: () => <div>Loading...</div>
-  }
-);
+const LoadableAbout = loadable(() => import('./about/About'), {
+  fallback: LoadingComponent
+});
 
 const App = () => (
   <div className="app">

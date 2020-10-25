@@ -10,6 +10,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 
 const { getAppEnv } = require('./env');
 
@@ -78,7 +79,10 @@ module.exports = function(envType) {
         loader: 'babel-loader',
         options: {
           cacheDirectory: IS_DEV,
-          compact: IS_PROD
+          compact: IS_PROD,
+          plugins: [IS_DEV && require.resolve('react-refresh/babel')].filter(
+            Boolean
+          )
         }
       },
 
@@ -165,6 +169,7 @@ module.exports = function(envType) {
     IS_DEV && new webpack.HotModuleReplacementPlugin(),
     IS_DEV && new CaseSensitivePathsPlugin(),
     IS_DEV && new ErrorOverlayPlugin(),
+    IS_DEV && new ReactRefreshWebpackPlugin(),
     IS_PROD &&
       new MiniCssExtractPlugin({
         filename: 'static/css/[name].[contenthash:8].css'
